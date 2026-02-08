@@ -1137,6 +1137,23 @@
 
                 input[type="date"]::placeholder, input[type="time"]::placeholder{ color: rgba(var(--f-accent-rgb),0.4) !important; }
 
+                input[type="date"]::-webkit-calendar-picker-indicator,
+                input[type="time"]::-webkit-calendar-picker-indicator { 
+                    filter: invert(0) brightness(0.8) sepia(0.8) hue-rotate(var(--hue-rotation, 0deg)) saturate(1.2);
+                    cursor: pointer;
+                    opacity: 0.85;
+                }
+
+                input[type="date"]::-webkit-calendar-picker-indicator:hover,
+                input[type="time"]::-webkit-calendar-picker-indicator:hover { 
+                    opacity: 1;
+                    filter: invert(0) brightness(1.0) sepia(1.0) hue-rotate(var(--hue-rotation, 0deg)) saturate(1.4);
+                }
+
+                input[type="date"], input[type="time"] {
+                    accent-color: var(--f-accent);
+                }
+
                 button, .theme-toggle{ border-color: var(--f-accent) !important; }
 
                 .btn-add{ background: linear-gradient(90deg, var(--f-accent), var(--f-accent-dark)) !important; color: #fff !important; box-shadow: 0 10px 36px rgba(var(--f-accent-rgb),0.22), inset 0 1px 0 rgba(255,255,255,0.1) !important; }
@@ -1190,6 +1207,29 @@
                 let s=document.getElementById('futuristic-accent-style');
                 if(!s){ s=document.createElement('style'); s.id='futuristic-accent-style'; document.head.appendChild(s);} 
                 s.textContent = buildCss(lightHex,darkHex);
+                
+                // Update hue rotation for picker icons
+                const isDark = document.documentElement.classList.contains('dark-mode');
+                const accentHex = isDark ? darkHex : lightHex;
+                const hueRot = hexToHue(accentHex);
+                document.documentElement.style.setProperty('--hue-rotation', hueRot + 'deg');
+            }
+
+            function hexToHue(hex) {
+                hex = hex.replace('#','');
+                if (hex.length===3) hex = hex.split('').map(c=>c+c).join('');
+                const r = parseInt(hex.substr(0,2), 16) / 255;
+                const g = parseInt(hex.substr(2,2), 16) / 255;
+                const b = parseInt(hex.substr(4,2), 16) / 255;
+                const max = Math.max(r,g,b), min = Math.min(r,g,b);
+                const delta = max - min;
+                let hue = 0;
+                if(delta !== 0) {
+                    if(max === r) hue = ((g - b) / delta + (g < b ? 6 : 0)) / 6;
+                    else if(max === g) hue = ((b - r) / delta + 2) / 6;
+                    else hue = ((r - g) / delta + 4) / 6;
+                }
+                return Math.round(hue * 360);
             }
 
             function applyStoredAccents(){
