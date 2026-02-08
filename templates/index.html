@@ -548,6 +548,12 @@
             <button class="theme-toggle active" id="light-theme-btn" onclick="setTheme('light')" title="Light Mode">☀️</button>
             <button class="theme-toggle" id="dark-theme-btn" onclick="setTheme('dark')" title="Dark Mode">🌙</button>
         </div>
+        <div class="accent-pickers" style="display:flex;gap:8px;align-items:center;margin-left:12px;">
+            <label for="accent-light-picker" style="font-size:12px;color:var(--text-tertiary);margin-right:4px;">Light</label>
+            <input type="color" id="accent-light-picker" title="Accent for Light Theme">
+            <label for="accent-dark-picker" style="font-size:12px;color:var(--text-tertiary);margin:0 4px 0 8px;">Dark</label>
+            <input type="color" id="accent-dark-picker" title="Accent for Dark Theme">
+        </div>
     </div>
     
     <div class="container">
@@ -866,6 +872,8 @@
                 lightBtn.classList.add('active');
                 darkBtn.classList.remove('active');
             }
+            // Re-apply stored accents after switching theme
+            if (typeof applyStoredAccents === 'function') applyStoredAccents();
         }
         
         // Load saved theme on page load
@@ -918,6 +926,73 @@
         // Update clock on page load and every second
         updateClock();
         setInterval(updateClock, 1000);
+    </script>
+    <script>
+        /* Per-theme futuristic palette generator and overrides */
+        (function(){
+            function hexToRgb(hex) {
+                hex = hex.replace('#','');
+                if (hex.length===3) hex = hex.split('').map(c=>c+c).join('');
+                const n = parseInt(hex,16);
+                return [(n>>16)&255, (n>>8)&255, n&255];
+            }
+
+            function clamp(v,a,b){return Math.min(Math.max(v,a),b);} 
+            function adjustColor(hex, pct){
+                const [r,g,b]=hexToRgb(hex);
+                const t = pct<0?0:255; const p=Math.abs(pct)/100;
+                const nr=Math.round((t-r)*p+r), ng=Math.round((t-g)*p+g), nb=Math.round((t-b)*p+b);
+                return '#'+[nr,ng,nb].map(x=>clamp(x,0,255).toString(16).padStart(2,'0')).join('');
+            }
+
+            function buildCss(lightHex,darkHex){
+                const [lr,lg,lb]=hexToRgb(lightHex); const [dr,dg,db]=hexToRgb(darkHex);
+                const lightGlow = `rgba(${lr},${lg},${lb},0.6)`;
+                const darkGlow = `rgba(${dr},${dg},${db},0.75)`;
+                const css = `:root{ --f-accent:${lightHex}; --f-accent-rgb:${lr},${lg},${lb}; }
+                html.dark-mode{ --f-accent:${darkHex}; --f-accent-rgb:${dr},${dg},${db}; }
+                /* override core elements to follow accent */
+                .header{ border-bottom-color: var(--f-accent) !important; box-shadow: 0 6px 18px rgba(var(--f-accent-rgb),0.12) !important; }
+                .header-title span{ color: var(--f-accent) !important; }
+                .container, .form-section, table, .week-info{ border-color: var(--f-accent) !important; }
+                button, .theme-toggle{ border-color: var(--f-accent) !important; }
+                .btn-add{ background: linear-gradient(90deg, var(--f-accent), ${adjustColor(lightHex, -10)}) !important; color: #fff !important; box-shadow: 0 6px 20px rgba(var(--f-accent-rgb),0.35) !important; }
+                html.dark-mode .btn-add{ background: linear-gradient(90deg, var(--f-accent), ${adjustColor(darkHex, -10)}) !important; box-shadow: 0 8px 26px rgba(var(--f-accent-rgb),0.45) !important; }
+                .btn-delete{ background: transparent; border-bottom: 2px solid var(--f-accent) !important; }
+                .btn-edit{ background: transparent; border-bottom: 2px solid var(--f-accent) !important; }
+                h1, h2{ color: var(--f-accent) !important; }
+                h2{ border-bottom: 2px solid var(--f-accent) !important; }
+                table thead th{ background: linear-gradient(90deg, rgba(var(--f-accent-rgb),0.08), rgba(var(--f-accent-rgb),0.03)) !important; }
+                tr:hover{ background: rgba(var(--f-accent-rgb),0.04) !important; }
+                a, .link{ color: var(--f-accent) !important; text-decoration: underline dotted var(--f-accent)  !important; }
+                `;
+                return css;
+            }
+
+            function applyOverrides(lightHex,darkHex){
+                let s=document.getElementById('futuristic-accent-style');
+                if(!s){ s=document.createElement('style'); s.id='futuristic-accent-style'; document.head.appendChild(s);} 
+                s.textContent = buildCss(lightHex,darkHex);
+            }
+
+            function applyStoredAccents(){
+                const light = localStorage.getItem('accent_light') || '#2dd4bf';
+                const dark = localStorage.getItem('accent_dark') || '#00ff88';
+                const lp=document.getElementById('accent-light-picker'); if(lp) lp.value = light;
+                const dp=document.getElementById('accent-dark-picker'); if(dp) dp.value = dark;
+                applyOverrides(light,dark);
+            }
+
+            document.addEventListener('DOMContentLoaded', ()=>{
+                const lp=document.getElementById('accent-light-picker'); const dp=document.getElementById('accent-dark-picker');
+                if(lp) lp.addEventListener('input', e=>{ localStorage.setItem('accent_light', e.target.value); applyStoredAccents(); });
+                if(dp) dp.addEventListener('input', e=>{ localStorage.setItem('accent_dark', e.target.value); applyStoredAccents(); });
+                applyStoredAccents();
+            });
+
+            // expose helper for theme switch to reapply
+            window.applyStoredAccents = applyStoredAccents;
+        })();
     </script>
 </body>
 </html>
