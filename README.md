@@ -1,61 +1,81 @@
-# User Authentication System with Flask
+# WorkTime Logging Application
 
-A simple, functional web application built with Flask that provides user signup and login functionality. All user data is stored persistently in SQLite with secure password hashing.
+A comprehensive Flask-based time tracking application designed to log work hours, monitor daily productivity, and analyze time trends through interactive charts. Track your login times, monitor deviation from target hours, and visualize your work patterns with detailed analytics.
 
 ## Features
 
-- **User Registration (Signup)**
-  - Create account with username, email, password, and full name
-  - Validation for duplicate usernames/emails
-  - Password confirmation
-  - Secure password hashing using Werkzeug
-
-- **User Login**
-  - Login with username and password
-  - Secure credential verification
+- **User Authentication**
+  - Secure user registration and login
   - Session-based authentication
+  - Password hashing using Werkzeug
+  - Account isolation (each user sees only their data)
 
-- **User Dashboard**
-  - Welcome page after successful login
-  - User profile page with account information
-  - Logout functionality
+- **Time Entry Tracking**
+  - Log daily in-time and out-time
+  - Automatic calculation of total hours worked
+  - View weekly time entries in organized tables
+  - Edit or delete existing time entries
+  - Deviation tracking from 8:42 hours (target work hours)
 
-- **Notes Management**
-  - Create, edit, and delete personal notes
-  - Organize notes with categories
-  - Tabbed interface for easy category browsing
-  - Each note has title, content, category, and timestamps
-  - Notes are private to each user
+- **Weekly & Monthly Navigation**
+  - Navigate between different weeks with ◀ and ▶ buttons
+  - Navigate between different months
+  - Return to current week/month with "This Week" / "This Month" button
+  - Easy viewing of historical time entries
+
+- **Analytics & Visualization**
+  - Daily average hours chart (This Week)
+  - Weekly average hours chart (This Month)
+  - Monthly average hours chart (This Year)
+  - Interactive Chart.js visualizations with hover tooltips
+  - Real-time statistics showing weekly and monthly totals
+
+- **Deviation Tracking**
+  - Compare actual hours against 8:42 target hours per day
+  - View deviation in minutes (positive/negative)
+  - Weekly and monthly deviation summaries
+  - Color-coded indicators for visual clarity
+
+- **Theme Support**
+  - Light and Dark mode toggle
+  - Customizable accent colors for both themes
+  - Persistent theme preference in localStorage
+  - Responsive design that works on all devices
 
 - **Security**
   - Password hashing (not stored in plain text)
   - Session-based authentication
   - SQL injection protection (parameterized queries)
   - Input validation
-  - User data isolation (users see only their own notes)
+  - User data isolation
 
 ## Technology Stack
 
 - **Backend**: Flask (Python)
 - **Database**: SQLite
-- **Frontend**: HTML (no CSS frameworks, no JavaScript libraries)
+- **Frontend**: HTML5 with CSS3 (responsive design)
+- **Charts**: Chart.js (interactive visualizations)
 - **Security**: Werkzeug for password hashing
+- **Styling**: Custom CSS with theme support (Light/Dark mode)
 
 ## Project Structure
 
 ```
-Auth-System/
-├── app.py                 # Main Flask application
-├── requirements.txt       # Python dependencies
-├── users.db              # SQLite database (created on first run)
+worktime-application/
+├── app.py                          # Main Flask application
+├── requirements.txt                # Python dependencies
+├── users.db                        # SQLite database (created on first run)
+├── README.md                       # Project documentation
 └── templates/
-    ├── base.html         # Base template with styling
-    ├── login.html        # Login page
-    ├── signup.html       # Registration page
-    ├── welcome.html      # Welcome page after login
-    ├── profile.html      # User profile page
-    ├── notes.html        # Notes listing with tabs
-    └── edit_note.html    # Note editing page
+    ├── base.html                   # Base template with header
+    ├── login.html                  # Login page
+    ├── signup.html                 # Registration page
+    ├── welcome.html                # Welcome page
+    ├── profile.html                # User profile page
+    ├── notes.html                  # Notes listing
+    ├── tracker.html                # Main time tracking dashboard
+    ├── edit_note.html              # Note editing page
+    └── admin_*.html                # Admin dashboard pages
 ```
 
 ## Installation & Setup
@@ -63,7 +83,7 @@ Auth-System/
 ### 1. Clone or Download the Project
 
 ```bash
-cd "c:\Users\RRADHAKR\OneDrive - Volvo Cars\Beam Shape\RamjithR\My Projects\Auth-System"
+cd "c:\Users\RRADHAKR\OneDrive - Volvo Cars\Beam Shape\RamjithR\My Projects\worktime-application"
 ```
 
 ### 2. Create a Virtual Environment (Optional but Recommended)
@@ -90,32 +110,40 @@ The application will start on `http://localhost:5001`
 ## Usage
 
 ### First Time Setup
-- No users exist initially
-- Navigate to the **Sign Up** page to create the first user
-- Fill in all required fields:
-  - Full Name
-  - Username (3+ characters)
-  - Email
-  - Password (6+ characters)
-  - Confirm Password
+1. Navigate to `http://localhost:5001`
+2. Sign up with a new account or login with existing credentials
+3. You'll be redirected to the Time Tracker dashboard
 
-### User Registration
-1. Click "Sign Up" on the login page
-2. Enter all required information
-3. Ensure passwords match
-4. System validates for duplicate usernames/emails
-5. Account is created and you're redirected to login
+### Logging Time Entries
+1. Go to **Time Tracker** page
+2. In the "Add Today's Time Entry" form:
+   - Select the date (defaults to today)
+   - Enter "In Time" (e.g., 09:00)
+   - Enter "Out Time" (e.g., 18:00)
+   - Click "Add Entry"
+3. The entry is calculated and added to the weekly table
 
-### User Login
-1. Enter your username and password
-2. Click "Login"
-3. Successful login redirects to welcome page
-4. Session is created and maintained
+### Viewing Weekly Time Entries
+1. Time entries are displayed in a table showing:
+   - Date and day of the week
+   - In time and out time
+   - Total hours worked
+   - Deviation from target (8:42 hours)
+2. Use navigation buttons to view previous/next weeks:
+   - ◀ button: Previous week
+   - "This Week" button: Return to current week
+   - ▶ button: Next week
 
-### User Dashboard
-- **Welcome Page**: Shows personalized greeting and account details
-- **Profile Page**: Displays full account information including registration date
-- **Logout**: Clears session and returns to login page
+### Viewing Analytics
+1. **Daily Chart (This Week)**: Shows average hours for each day
+2. **Weekly Chart (This Month)**: Shows average hours for each week
+3. **Monthly Chart (This Year)**: Shows average hours for each month
+4. Hover over bars to see exact values
+
+### Managing Your Account
+- **Profile**: View your account information
+- **Settings**: Customize theme (Light/Dark) and accent colors
+- **Logout**: Sign out of your account
 
 ## Database Schema
 
@@ -127,21 +155,36 @@ CREATE TABLE users (
     email TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,           -- Hashed password
     full_name TEXT NOT NULL,
+    is_admin INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 ```
 
-### Notes Table
+### Time Entries Table
 ```sql
-CREATE TABLE notes (
+CREATE TABLE time_entries (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
-    title TEXT NOT NULL,              -- Note title
-    content TEXT NOT NULL,            -- Note content
-    category TEXT NOT NULL,           -- Category for organization (becomes a tab)
+    date TEXT NOT NULL,               -- Date of entry (YYYY-MM-DD format)
+    in_time TEXT NOT NULL,            -- Clock in time (HH:MM format)
+    out_time TEXT NOT NULL,           -- Clock out time (HH:MM format)
+    total_hours REAL NOT NULL,        -- Calculated total hours worked
+    deviation_minutes INTEGER NOT NULL, -- Deviation from 8:42 target hours
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)  -- Link to user
+    UNIQUE(user_id, date),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+)
+```
+
+### Login History Table
+```sql
+CREATE TABLE login_history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    username TEXT NOT NULL,
+    login_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ip_address TEXT,
+    FOREIGN KEY (user_id) REFERENCES users(id)
 )
 ```
 
@@ -182,33 +225,36 @@ The application provides clear error messages for:
 
 | Route | Method | Purpose |
 |-------|--------|---------|
-| `/` | GET | Home (redirects to login or welcome) |
+| `/` | GET | Home (redirects to login or tracker) |
 | `/signup` | GET, POST | User registration page |
 | `/login` | GET, POST | User login page |
-| `/welcome` | GET | Welcome page (protected) |
+| `/tracker` | GET | Time tracker dashboard (protected) |
 | `/profile` | GET | User profile page (protected) |
 | `/logout` | GET | Logout and clear session |
-| `/notes` | GET | Notes listing with category tabs (protected) |
-| `/add_note` | POST | Create a new note (protected) |
-| `/edit_note/<note_id>` | GET, POST | Edit a note (protected) |
-| `/delete_note/<note_id>` | POST | Delete a note (protected) |
+| `/add_entry` | POST | Add a new time entry (protected) |
+| `/edit_entry/<entry_id>` | GET, POST | Edit time entry (protected) |
+| `/delete_entry/<entry_id>` | POST | Delete time entry (protected) |
+| `/api/graph/daily` | GET | Get daily average hours for current week (protected) |
+| `/api/graph/weekly` | GET | Get weekly average hours for current month (protected) |
+| `/api/graph/monthly` | GET | Get monthly average hours for current year (protected) |
 
 ## Protected Routes
 
 The following routes require authentication:
-- `/welcome` - Redirects to login if not authenticated
-- `/profile` - Redirects to login if not authenticated
-- `/notes` - Redirects to login if not authenticated
-- `/add_note` - Redirects to login if not authenticated
-- `/edit_note/<note_id>` - Redirects to login if not authenticated
-- `/delete_note/<note_id>` - Redirects to login if not authenticated
+- `/tracker` - Time tracker dashboard
+- `/profile` - User profile
+- `/add_entry` - Add time entry
+- `/edit_entry/<entry_id>` - Edit time entry
+- `/delete_entry/<entry_id>` - Delete time entry
+- `/api/graph/*` - All chart data endpoints
 
 ## Data Persistence
 
-- All user data is stored in `users.db` (SQLite database)
+- All user and time entry data is stored in `users.db` (SQLite database)
 - Database is created automatically on first run
 - Data persists across server restarts
-- Each user record includes creation timestamp
+- Each entry includes date, time, hours worked, and deviation tracking
+- TimeZone: Uses server local time for calculations
 
 ## Configuration
 
@@ -220,6 +266,9 @@ app.secret_key = 'your-secret-key-change-this-in-production'
 
 # Change port
 app.run(debug=True, port=5001)
+
+# Target working hours per day (in minutes)
+TARGET_MINUTES = 522  # 8:42 hours
 ```
 
 ## Testing the Application
@@ -229,49 +278,92 @@ app.run(debug=True, port=5001)
 2. Go to `/signup`
 3. Register a new user with details
 4. Login with the same credentials
-5. View welcome page and profile
+5. View tracker dashboard
 
-### Test Flow 2: Multiple Users
-1. Register user1 (username: john, password: password123)
-2. Register user2 (username: jane, password: password456)
-3. Test login with user1 credentials
-4. Logout
-5. Test login with user2 credentials
-6. Verify each user sees their own data
-
-### Test Flow 3: Validation
-1. Try to register with same username (should fail)
-2. Try to register with same email (should fail)
-3. Try to login with wrong password (should fail)
-4. Try passwordless login (should fail)
-
-### Test Flow 4: Notes Management
+### Test Flow 2: Add Time Entries
 1. Login as a user
-2. Click "My Notes" on the welcome page
-3. Create a new note with title "Shopping List" in category "Todo"
-4. Create another note with title "Project Ideas" in category "Ideas"
-5. Create a note in category "Personal"
-6. Verify tabs show all three categories (Todo, Ideas, Personal)
-7. Click tabs to switch between them
-8. Edit a note - click "Edit", modify content, save
-9. Delete a note - click "Delete", confirm popup
-10. Verify note count decreases in tab header
+2. Go to "Time Tracker" page
+3. Fill in today's in time (09:00) and out time (18:00)
+4. Click "Add Entry"
+5. Verify entry appears in weekly table
+6. Check that total hours and deviation are calculated correctly
 
-### Test Flow 5: User Isolation
-1. Login as user1, create 3 notes
-2. Logout
-3. Login as user2
-4. Verify "My Notes" shows only user2's notes (should be empty)
-5. Create notes as user2
-6. Logout, login as user1
-7. Verify user1 sees their original 3 notes, not user2's notes
+### Test Flow 3: View Weekly Data
+1. Login as a user
+2. Add multiple entries for different days in the current week
+3. View the "📊 Week #X - Time Entries" table
+4. Verify all entries are displayed with correct calculations
+5. Use ◀ button to go to previous week
+6. Verify weekly table shows correct data for that week
+7. Use "This Week" button to return to current week
+
+### Test Flow 4: View Analytics Charts
+1. Login as a user
+2. Ensure there are entries for the current week
+3. Go to "Login Hours Analytics" section
+4. View "This Week" tab - should show daily average bars
+5. View "This Month" tab - should show weekly average bars
+6. View "This Year" tab - should show monthly average bars
+7. Hover over bars to see values in tooltip
+
+### Test Flow 5: Edit/Delete Entries
+1. Login as a user
+2. Add an entry: 09:00 to 18:00
+3. Click "Edit" button on the entry
+4. Change out time to 17:00
+5. Save changes - verify updated hours
+6. Click "Delete" button
+7. Verify entry is removed from table
+
+### Test Flow 6: Month Navigation
+1. Login as a user
+2. Go to "Monthly Statistics" section
+3. Use ◀ button to view previous month
+4. Verify stats show correct month data
+5. Use "This Month" button to return to current month
+6. Use ▶ button to navigate to next month (should show empty if future month)
+
+### Test Flow 7: Theme Support
+1. Login as a user
+2. Click the ☀️ (Light) button in header
+3. Verify page switches to light theme
+4. Click the 🌙 (Dark) button
+5. Verify page switches to dark theme
+6. Click accent color pickers
+7. Select different colors
+8. Verify theme preference persists after page refresh
+
+## Key Calculations
+
+### Total Hours Worked
+```
+Total Hours = (Out Time - In Time) in decimal format
+Example: 09:00 to 18:00 = 9.0 hours
+Example: 09:00 to 17:30 = 8.5 hours
+```
+
+### Deviation from Target
+```
+Target Hours = 8:42 (522 minutes)
+Deviation = (Total Hours × 60) - Target Minutes
+Example: 9 hours worked = 540 minutes - 522 minutes = +18 minutes
+Example: 8 hours worked = 480 minutes - 522 minutes = -42 minutes
+```
+
+### Weekly Average
+```
+Weekly Average = Total Hours for Week / Number of Working Days
+Shows average daily hours worked during the week
+```
 
 ## Notes
 
 - The database file (`users.db`) is created in the same directory as `app.py`
 - For production deployment, change the `secret_key` to a random, secure value
-- Consider enabling HTTPS for production deployments
-- Implement additional security measures like rate limiting for production use
+- Target hours is set to 8:42 (522 minutes) per day by default
+- All times are in 24-hour format (HH:MM)
+- Dates are stored in ISO 8601 format (YYYY-MM-DD)
+- For production deployments, consider enabling HTTPS and implementing rate limiting
 
 ## Troubleshooting
 
@@ -281,26 +373,38 @@ app.run(debug=True, port=5002)  # Use a different port
 ```
 
 **Database errors**: Delete `users.db` and restart the app to reinitialize
+```bash
+rm users.db
+python app.py
+```
 
 **Import errors**: Make sure dependencies are installed:
 ```bash
 pip install -r requirements.txt
 ```
 
+**Time calculations incorrect**: Verify times are in HH:MM 24-hour format
+
 ## Future Enhancements
 
-- Email verification
-- Password reset functionality
-- Profile update/edit capability
-- User role management
-- Account deletion option
-- Login history/activity tracking
-- Two-factor authentication
-- User profile pictures
-- Account settings page
+- Multiple project/task tracking
+- Time export to CSV/PDF reports
+- Advanced filtering and search
+- Overtime tracking and reporting
+- Team Dashboard (admin view)
+- Email notifications for time entry reminders
+- Mobile app for time tracking
+- Integration with calendar systems
+- Geolocation tracking
+- Biometric authentication
+- Rest day management
+- Leave/vacation tracking
+- Performance analytics and insights
+- Approval workflow for time entries
 
 ---
 
-**Created**: February 2026
-**Technology**: Flask + SQLite + HTML
-**License**: Open Source
+**Created**: February 2026  
+**Technology**: Flask + SQLite + Chart.js + HTML5/CSS3  
+**License**: Open Source  
+**Purpose**: WorkTime Logging & Analytics Application
